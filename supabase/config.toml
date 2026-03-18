@@ -2,3 +2,6 @@ project_id = "yeoyfsxzsxttutzwoizq"
 
 [functions.mongodb]
 verify_jwt = false
+
+[functions.activities]
+verify_jwt = false

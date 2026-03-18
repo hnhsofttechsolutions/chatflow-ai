@@ -9,6 +9,7 @@ import {
   generateChatTitle,
 } from '@/lib/chat-store';
 import { sendMessageToN8n } from '@/lib/n8n-client';
+import { queryMongoDB, formatMongoResult } from '@/lib/mongodb-client';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatInput from '@/components/chat/ChatInput';

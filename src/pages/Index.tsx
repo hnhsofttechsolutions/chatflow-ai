@@ -133,9 +133,36 @@ const Index = () => {
       setIsTyping(true);
 
       try {
-        const currentChat = chats.find((c) => c.id === chatId);
-        const history = currentChat?.messages || [];
-        const response = await sendMessageToN8n(content, USER_ID, history);
+        let response: string;
+
+        // Handle /db commands for MongoDB
+        if (content.trim().startsWith('/db')) {
+          const parts = content.trim().split(/\s+/);
+          const subCommand = parts[1] || 'overview';
+
+          if (subCommand === 'overview') {
+            const data = await queryMongoDB({ action: 'overview' });
+            response = formatMongoResult(data);
+          } else if (subCommand === 'databases') {
+            const data = await queryMongoDB({ action: 'listDatabases' });
+            response = formatMongoResult(data);
+          } else if (subCommand === 'collections' && parts[2]) {
+            const data = await queryMongoDB({ action: 'listCollections', database: parts[2] });
+            response = formatMongoResult(data);
+          } else if (subCommand === 'find' && parts[2] && parts[3]) {
+            const data = await queryMongoDB({ action: 'find', database: parts[2], collection: parts[3], limit: 10 });
+            response = formatMongoResult(data);
+          } else if (subCommand === 'count' && parts[2] && parts[3]) {
+            const data = await queryMongoDB({ action: 'count', database: parts[2], collection: parts[3] });
+            response = formatMongoResult(data);
+          } else {
+            response = `**MongoDB Commands:**\n- \`/db overview\` — Full overview of all databases\n- \`/db databases\` — List databases\n- \`/db collections <database>\` — List collections\n- \`/db find <database> <collection>\` — Sample documents\n- \`/db count <database> <collection>\` — Count documents`;
+          }
+        } else {
+          const currentChat = chats.find((c) => c.id === chatId);
+          const history = currentChat?.messages || [];
+          response = await sendMessageToN8n(content, USER_ID, history);
+        }
 
         const aiMsg: ChatMessage = {
           id: generateId(),

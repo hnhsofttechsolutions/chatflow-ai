@@ -1,4 +1,4 @@
-import { Menu, Trash2 } from 'lucide-react';
+import { Menu, Trash2, Bot } from 'lucide-react';
 
 interface Props {
   title: string;
@@ -17,10 +17,13 @@ const ChatHeader = ({ title, onToggleSidebar, onClearChat, hasMessages }: Props)
         >
           <Menu className="w-5 h-5 text-foreground" />
         </button>
+        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+          <Bot className="w-4.5 h-4.5 text-primary" />
+        </div>
         <div>
           <h1 className="font-semibold text-foreground text-sm">{title}</h1>
-          <p className="text-[11px] text-accent flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+          <p className="text-[11px] text-primary flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
             Online
           </p>
         </div>

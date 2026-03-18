@@ -13,7 +13,16 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
+        "chat-user": "hsl(var(--chat-user))",
+        "chat-user-foreground": "hsl(var(--chat-user-foreground))",
+        "chat-ai": "hsl(var(--chat-ai))",
+        "chat-ai-foreground": "hsl(var(--chat-ai-foreground))",
+        "chat-ai-border": "hsl(var(--chat-ai-border))",
+        "sidebar-bg": "hsl(var(--sidebar-bg))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

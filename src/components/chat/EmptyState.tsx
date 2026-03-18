@@ -1,10 +1,11 @@
-import { Bot, Mail, BarChart3, CalendarCheck, ListChecks } from 'lucide-react';
+import { Bot, Mail, BarChart3, CalendarCheck, ListChecks, Database } from 'lucide-react';
 
 interface Props {
   onSuggestion: (text: string) => void;
 }
 
 const suggestions = [
+  { icon: Database, text: '/db overview', label: 'MongoDB Overview', color: 'text-primary' },
   { icon: Mail, text: 'Check my emails and summarize the urgent ones', label: 'Email Triage', color: 'text-primary' },
   { icon: BarChart3, text: "Analyze today's financial Twitter sentiment", label: 'Financial Intel', color: 'text-primary' },
   { icon: CalendarCheck, text: 'Optimize my calendar for this week', label: 'Calendar', color: 'text-primary' },

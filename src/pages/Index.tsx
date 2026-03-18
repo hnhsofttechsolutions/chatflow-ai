@@ -75,6 +75,24 @@ const Index = () => {
     updateChat(activeChatId, (c) => ({ ...c, messages: [], title: 'New Chat', updatedAt: Date.now() }));
   }, [activeChatId, updateChat]);
 
+  const handleApprovalResolved = useCallback(
+    (result: string) => {
+      if (!activeChatId) return;
+      const aiMsg: ChatMessage = {
+        id: generateId(),
+        role: 'ai',
+        content: result,
+        timestamp: Date.now(),
+      };
+      updateChat(activeChatId, (c) => ({
+        ...c,
+        messages: [...c.messages, aiMsg],
+        updatedAt: Date.now(),
+      }));
+    },
+    [activeChatId, updateChat]
+  );
+
   const handleSend = useCallback(
     async (content: string) => {
       let chatId = activeChatId;
@@ -104,7 +122,6 @@ const Index = () => {
         };
       });
 
-      // Mark delivered after brief delay
       setTimeout(() => {
         updateChat(chatId!, (c) => ({
           ...c,
@@ -164,19 +181,23 @@ const Index = () => {
 
       <main className="flex-1 flex flex-col min-w-0">
         <ChatHeader
-          title={activeChat?.title || 'n8n AI Assistant'}
+          title={activeChat?.title || 'Chief of Staff AI'}
           onToggleSidebar={() => setSidebarOpen(true)}
           onClearChat={handleClearChat}
           hasMessages={(activeChat?.messages.length || 0) > 0}
         />
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-pattern">
           {!activeChat || activeChat.messages.length === 0 ? (
             <EmptyState onSuggestion={handleSend} />
           ) : (
             <div className="max-w-3xl mx-auto py-4 space-y-4">
               {activeChat.messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onApprovalResolved={handleApprovalResolved}
+                />
               ))}
               {isTyping && <TypingIndicator />}
             </div>

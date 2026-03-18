@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         "chat-user": "hsl(var(--chat-user))",
@@ -22,7 +23,11 @@ export default {
         "chat-ai": "hsl(var(--chat-ai))",
         "chat-ai-foreground": "hsl(var(--chat-ai-foreground))",
         "chat-ai-border": "hsl(var(--chat-ai-border))",
+        "chat-bg": "hsl(var(--chat-bg))",
         "sidebar-bg": "hsl(var(--sidebar-bg))",
+        "approval-bg": "hsl(var(--approval-bg))",
+        "approval-border": "hsl(var(--approval-border))",
+        "approval-foreground": "hsl(var(--approval-foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -74,20 +79,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -96,5 +93,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;

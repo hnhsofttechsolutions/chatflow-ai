@@ -34,27 +34,27 @@ const ChatInput = ({ onSend, disabled }: Props) => {
   return (
     <div className="border-t border-border glass">
       <div className="max-w-3xl mx-auto px-4 py-3">
-        <div className="flex items-end gap-2 bg-secondary rounded-2xl px-4 py-2 shadow-soft">
+        <div className="flex items-end gap-2.5 bg-card rounded-2xl px-4 py-2.5 shadow-soft border border-border">
           <textarea
             ref={textareaRef}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
+            placeholder="Message your Chief of Staff..."
             rows={1}
             disabled={disabled}
-            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none outline-none max-h-[120px]"
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none outline-none max-h-[120px] leading-relaxed"
           />
           <button
             onClick={handleSend}
             disabled={disabled || !value.trim()}
-            className="p-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+            className="p-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0 shadow-soft"
           >
             <Send className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-[11px] text-muted-foreground text-center mt-2">
-          Powered by n8n AI Workflows
+        <p className="text-[11px] text-muted-foreground text-center mt-2 opacity-60">
+          Chief of Staff AI · Powered by n8n Workflows
         </p>
       </div>
     </div>

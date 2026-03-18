@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,58 +6,65 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 28% 17%;
+    --background: 220 16% 96%;
+    --foreground: 220 20% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 220 20% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover-foreground: 220 20% 14%;
 
-    --primary: 239 84% 67%;
+    --primary: 142 62% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 96%;
-    --secondary-foreground: 215 28% 17%;
+    --secondary-foreground: 220 20% 14%;
 
     --muted: 220 14% 96%;
-    --muted-foreground: 215 13% 45%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 160 84% 39%;
+    --accent: 142 62% 40%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 239 84% 67%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 142 62% 40%;
 
     --radius: 0.75rem;
 
-    --sidebar-bg: 220 14% 96%;
-    --sidebar-foreground: 215 28% 17%;
-    --sidebar-border: 220 13% 91%;
+    --sidebar-bg: 0 0% 100%;
+    --sidebar-foreground: 220 20% 14%;
+    --sidebar-border: 220 13% 90%;
 
-    --chat-user: 239 84% 67%;
+    --chat-user: 142 62% 40%;
     --chat-user-foreground: 0 0% 100%;
     --chat-ai: 0 0% 100%;
-    --chat-ai-foreground: 215 28% 17%;
-    --chat-ai-border: 220 13% 91%;
+    --chat-ai-foreground: 220 20% 14%;
+    --chat-ai-border: 220 13% 92%;
 
-    --glass-bg: 0 0% 100% / 0.8;
-    --glass-blur: 12px;
+    --chat-bg: 225 20% 93%;
 
-    --shadow-soft: 0 2px 16px -4px hsl(215 28% 17% / 0.06);
-    --shadow-medium: 0 4px 24px -6px hsl(215 28% 17% / 0.1);
+    --glass-bg: 0 0% 100% / 0.85;
+    --glass-blur: 16px;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --shadow-soft: 0 1px 8px -2px hsl(220 20% 14% / 0.05);
+    --shadow-medium: 0 4px 20px -4px hsl(220 20% 14% / 0.1);
+    --shadow-glow: 0 0 20px hsl(142 62% 40% / 0.15);
+
+    --approval-bg: 45 93% 95%;
+    --approval-border: 45 93% 70%;
+    --approval-foreground: 45 60% 25%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-primary: 220 20% 14%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 20% 14%;
+    --sidebar-ring: 142 62% 40%;
   }
 }
 
@@ -71,9 +78,8 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
@@ -102,6 +108,15 @@
     box-shadow: var(--shadow-medium);
   }
 
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .chat-pattern {
+    background-color: hsl(var(--chat-bg));
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
   @keyframes slide-up-fade {
     from {
       opacity: 0;
@@ -124,11 +139,25 @@
     }
   }
 
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
   .animate-slide-up {
-    animation: slide-up-fade 200ms ease-out;
+    animation: slide-up-fade 250ms ease-out;
   }
 
   .animate-pulse-dot {
     animation: pulse-dot 1.4s infinite ease-in-out;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+    background-size: 200% 100%;
   }
 }

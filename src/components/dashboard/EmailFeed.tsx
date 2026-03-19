@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Activity } from '@/lib/activities-client';
+import { EmailActivity } from '@/lib/activities-client';
 import { Mail, ShieldAlert, Info, AlertCircle, CalendarDays } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
@@ -29,33 +29,30 @@ function formatTime(ts: string) {
 }
 
 interface Props {
-  activities: Activity[];
+  emails: EmailActivity[];
 }
 
-const EmailFeed = ({ activities }: Props) => {
+const EmailFeed = ({ emails: rawEmails }: Props) => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
 
   const emails = useMemo(() => {
-    let list = activities.filter((a) => a.type === 'email');
+    let list = [...rawEmails];
     if (categoryFilter !== 'all') {
       list = list.filter((a) => a.category === categoryFilter);
     }
     if (dateFilter) {
-      list = list.filter((a) => isSameDay(new Date(a.timestamp), dateFilter));
+      list = list.filter((a) => isSameDay(new Date(a.processedAt), dateFilter));
     }
-    return list.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [activities, categoryFilter, dateFilter]);
+    return list.sort((a, b) => new Date(b.processedAt).getTime() - new Date(a.processedAt).getTime());
+  }, [rawEmails, categoryFilter, dateFilter]);
 
-  const counts = useMemo(() => {
-    const emailList = activities.filter((a) => a.type === 'email');
-    return {
-      all: emailList.length,
-      'Action Required': emailList.filter((a) => a.category === 'Action Required').length,
-      'FYI': emailList.filter((a) => a.category === 'FYI').length,
-      'Spam': emailList.filter((a) => a.category === 'Spam').length,
-    };
-  }, [activities]);
+  const counts = useMemo(() => ({
+    all: rawEmails.length,
+    'Action Required': rawEmails.filter((a) => a.category === 'Action Required').length,
+    'FYI': rawEmails.filter((a) => a.category === 'FYI').length,
+    'Spam': rawEmails.filter((a) => a.category === 'Spam').length,
+  }), [rawEmails]);
 
   return (
     <div className="space-y-4">
@@ -135,11 +132,11 @@ const EmailFeed = ({ activities }: Props) => {
       ) : (
         <div className="space-y-2.5">
           {emails.map((email, i) => {
-            const style = categoryStyle[email.category || 'FYI'] || categoryStyle['FYI'];
+            const style = categoryStyle[email.category] || categoryStyle['FYI'];
             const CatIcon = style.icon;
             return (
               <div
-                key={email._id || `${email.timestamp}-${i}`}
+                key={email._id || `${email.processedAt}-${i}`}
                 className={cn(
                   'bg-card border rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm transition-all hover:shadow-md',
                   style.border
@@ -149,7 +146,7 @@ const EmailFeed = ({ activities }: Props) => {
                   <div className={cn('w-6 h-6 rounded-lg flex items-center justify-center', style.bg)}>
                     <CatIcon className={cn('w-3.5 h-3.5', style.text)} />
                   </div>
-                  <h3 className="text-sm font-semibold text-foreground flex-1">{email.title}</h3>
+                  <h3 className="text-sm font-semibold text-foreground flex-1 truncate">{email.subject}</h3>
                   <Badge
                     variant="outline"
                     className={cn('text-[10px] px-1.5 py-0 h-4 font-medium border', style.bg, style.text, style.border)}
@@ -157,8 +154,12 @@ const EmailFeed = ({ activities }: Props) => {
                     {email.category}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed pl-8">{email.content}</p>
-                <span className="text-[11px] text-muted-foreground/60 mt-1.5 block pl-8">{formatTime(email.timestamp)}</span>
+                <p className="text-xs text-muted-foreground/80 pl-8 mb-1">From: {email.from}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed pl-8">{email.bodyPreview}</p>
+                {email.reasoning && (
+                  <p className="text-xs text-muted-foreground/60 pl-8 mt-1.5 italic">AI: {email.reasoning}</p>
+                )}
+                <span className="text-[11px] text-muted-foreground/60 mt-1.5 block pl-8">{formatTime(email.processedAt)}</span>
               </div>
             );
           })}

@@ -1,52 +1,31 @@
-import { useState, useMemo } from 'react';
 import { useActivities } from '@/hooks/use-activities';
+import EmailFeed from '@/components/dashboard/EmailFeed';
+import MarketFeed from '@/components/dashboard/MarketFeed';
 import ActivityCard from '@/components/dashboard/ActivityCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bot, Search, RefreshCw, Mail, Twitter, ListChecks, AlertTriangle, Layers } from 'lucide-react';
-import { Activity } from '@/lib/activities-client';
-
-const FILTER_OPTIONS = [
-  { value: 'all', label: 'All', icon: Layers },
-  { value: 'email', label: 'Email', icon: Mail },
-  { value: 'twitter', label: 'Market', icon: Twitter },
-  { value: 'task', label: 'Tasks', icon: ListChecks },
-  { value: 'alert', label: 'Alerts', icon: AlertTriangle },
-] as const;
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Bot, RefreshCw, Mail, TrendingUp, Layers } from 'lucide-react';
+import { useMemo } from 'react';
 
 const Dashboard = () => {
   const { data: activities, isLoading, isRefetching, refetch } = useActivities(10000);
-  const [filter, setFilter] = useState<string>('all');
-  const [search, setSearch] = useState('');
 
-  const filtered = useMemo(() => {
+  const otherActivities = useMemo(() => {
     if (!activities) return [];
-    let list = activities;
-    if (filter !== 'all') {
-      list = list.filter((a) => a.type === filter);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.title.toLowerCase().includes(q) ||
-          a.content.toLowerCase().includes(q) ||
-          (a.category || '').toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [activities, filter, search]);
+    return activities.filter((a) => a.type !== 'email' && a.type !== 'twitter');
+  }, [activities]);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-30 glass border-b border-border">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shadow-glow">
               <Bot className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-base font-semibold text-foreground leading-tight">AI Activity Feed</h1>
+              <h1 className="text-base font-semibold text-foreground leading-tight">AI Activity Dashboard</h1>
               <p className="text-[11px] text-muted-foreground">
                 Live system monitor
                 {isRefetching && <span className="ml-1.5 text-primary">● syncing</span>}
@@ -63,43 +42,9 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search activities..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 transition"
-          />
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {FILTER_OPTIONS.map((f) => {
-            const active = filter === f.value;
-            return (
-              <button
-                key={f.value}
-                onClick={() => setFilter(f.value)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border ${
-                  active
-                    ? 'bg-primary text-primary-foreground border-primary shadow-glow'
-                    : 'bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground'
-                }`}
-              >
-                <f.icon className="w-3 h-3" />
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Feed */}
+      <div className="max-w-4xl mx-auto px-4 py-5">
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="space-y-4 pt-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex items-start gap-3">
                 <Skeleton className="w-9 h-9 rounded-xl flex-shrink-0" />
@@ -111,20 +56,49 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-              <Bot className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <p className="text-sm font-medium text-foreground mb-1">No activity yet</p>
-            <p className="text-xs text-muted-foreground">AI workflows haven't produced any results yet.</p>
-          </div>
         ) : (
-          <div className="space-y-3">
-            {filtered.map((activity, i) => (
-              <ActivityCard key={activity._id || `${activity.timestamp}-${i}`} activity={activity} />
-            ))}
-          </div>
+          <Tabs defaultValue="emails" className="w-full">
+            <TabsList className="w-full justify-start bg-card border border-border rounded-xl p-1 mb-5">
+              <TabsTrigger value="emails" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Mail className="w-3.5 h-3.5" />
+                Emails
+              </TabsTrigger>
+              <TabsTrigger value="market" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <TrendingUp className="w-3.5 h-3.5" />
+                Market Intel
+              </TabsTrigger>
+              <TabsTrigger value="other" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Layers className="w-3.5 h-3.5" />
+                Other
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="emails">
+              <EmailFeed activities={activities || []} />
+            </TabsContent>
+
+            <TabsContent value="market">
+              <MarketFeed activities={activities || []} />
+            </TabsContent>
+
+            <TabsContent value="other">
+              {otherActivities.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                    <Bot className="w-7 h-7 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground mb-1">No other activity</p>
+                  <p className="text-xs text-muted-foreground">Tasks and alerts will appear here.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {otherActivities.map((a, i) => (
+                    <ActivityCard key={a._id || `${a.timestamp}-${i}`} activity={a} />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </div>

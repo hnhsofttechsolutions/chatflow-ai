@@ -5,21 +5,97 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Mock data for when MongoDB is not available or has no activities collection
 const MOCK_ACTIVITIES = [
   {
     type: "email",
-    title: "Email Categorized",
+    title: "Client Invoice Overdue",
     category: "Action Required",
-    content: "Client asked for update on Q1 deliverables — flagged as urgent by AI triage system.",
+    content: "Invoice #4821 from Acme Corp is 15 days overdue. AI recommends sending a follow-up reminder.",
     timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
   },
   {
-    type: "twitter",
-    title: "Market Summary Generated",
-    category: "Intel",
-    content: "Markets showing bearish sentiment due to Fed signals. Tech sector down 2.3%. Crypto stable. AI recommends holding current positions.",
+    type: "email",
+    title: "Weekly Newsletter — TechCrunch",
+    category: "FYI",
+    content: "Weekly digest: 12 articles about AI startups, 3 funding rounds, 2 product launches.",
     timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Suspicious Sender Detected",
+    category: "Spam",
+    content: "Email from unknown sender claiming prize winnings. Marked as spam and archived.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Board Meeting Reschedule Request",
+    category: "Action Required",
+    content: "CFO requested moving Thursday's board meeting to Friday 3pm. Awaiting your confirmation.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Shipping Confirmation — Amazon",
+    category: "FYI",
+    content: "Your order #A-9182 has shipped. Expected delivery: March 21.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Phishing Attempt Blocked",
+    category: "Spam",
+    content: "Blocked email impersonating IT department requesting password reset. Source: unknown domain.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Daily Email Digest",
+    category: "FYI",
+    content: "12 emails processed. 3 flagged urgent. 5 auto-archived. 4 require manual review.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Contract Review Needed",
+    category: "Action Required",
+    content: "Legal team sent updated NDA for Project Phoenix. Needs your signature by EOD Friday.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+  },
+  {
+    type: "email",
+    title: "Lottery Winner Notification",
+    category: "Spam",
+    content: "You've been selected as a winner of $5M. Flagged and blocked by AI spam filter.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+  },
+  {
+    type: "twitter",
+    title: "Market Summary — March 19",
+    category: "Intel",
+    content: "Markets showing bearish sentiment due to Fed signals. Tech sector down 2.3%. Crypto stable. AI recommends holding current positions. Key movers: NVDA -3.1%, AAPL +0.8%, TSLA -2.7%.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+  },
+  {
+    type: "twitter",
+    title: "Market Summary — March 18",
+    category: "Intel",
+    content: "S&P 500 gained 1.2% on strong earnings. Tech rally led by semiconductors. Oil prices stable at $78/barrel. Bond yields slightly up.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+  },
+  {
+    type: "twitter",
+    title: "Competitor Alert — March 18",
+    category: "Intel",
+    content: "Competitor launched new pricing tier. 47 mentions detected on Twitter. Sentiment: mostly positive. Recommendation: review pricing strategy.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+  },
+  {
+    type: "twitter",
+    title: "Market Summary — March 17",
+    category: "Intel",
+    content: "Mixed signals in global markets. European indices up 0.5%, Asian markets flat. Crypto saw 4% rally led by ETH. AI sentiment: cautiously optimistic.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
   },
   {
     type: "task",
@@ -36,25 +112,11 @@ const MOCK_ACTIVITIES = [
     timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
   },
   {
-    type: "email",
-    title: "Daily Email Digest",
-    category: "Summary",
-    content: "12 emails processed. 3 flagged urgent. 5 auto-archived. 4 require manual review.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-  },
-  {
     type: "task",
     title: "Weekly Report Compiled",
     category: "Reports",
     content: "AI compiled weekly KPI report: Revenue up 8%, customer churn down 1.2%, 14 support tickets resolved.",
     timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-  },
-  {
-    type: "twitter",
-    title: "Competitor Mention Tracked",
-    category: "Intel",
-    content: "Competitor launched new pricing tier. 47 mentions detected on Twitter. Sentiment: mostly positive.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
   },
 ];
 
@@ -65,7 +127,6 @@ Deno.serve(async (req) => {
 
   try {
     const MONGODB_URI = Deno.env.get('MONGODB_URI');
-    
     let activities: unknown[];
 
     if (MONGODB_URI) {
@@ -77,7 +138,6 @@ Deno.serve(async (req) => {
         });
         await client.connect();
 
-        // Try to find an activities collection across databases
         const admin = client.db().admin();
         const dbs = await admin.listDatabases();
         let found = false;

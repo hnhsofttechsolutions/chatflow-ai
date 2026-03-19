@@ -65,7 +65,7 @@ const Dashboard = () => {
               </TabsTrigger>
               <TabsTrigger value="market" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <TrendingUp className="w-3.5 h-3.5" />
-                Market Intel
+                Twitter
               </TabsTrigger>
               <TabsTrigger value="other" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Layers className="w-3.5 h-3.5" />

@@ -1,19 +1,12 @@
 import { useActivities } from '@/hooks/use-activities';
 import EmailFeed from '@/components/dashboard/EmailFeed';
 import MarketFeed from '@/components/dashboard/MarketFeed';
-import ActivityCard from '@/components/dashboard/ActivityCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Bot, RefreshCw, Mail, TrendingUp, Layers } from 'lucide-react';
-import { useMemo } from 'react';
+import { Bot, RefreshCw, Mail, TrendingUp } from 'lucide-react';
 
 const Dashboard = () => {
-  const { data: activities, isLoading, isRefetching, refetch } = useActivities(10000);
-
-  const otherActivities = useMemo(() => {
-    if (!activities) return [];
-    return activities.filter((a) => a.type !== 'email' && a.type !== 'twitter');
-  }, [activities]);
+  const { data, isLoading, isRefetching, refetch } = useActivities(10000);
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,40 +56,18 @@ const Dashboard = () => {
                 <Mail className="w-3.5 h-3.5" />
                 Emails
               </TabsTrigger>
-              <TabsTrigger value="market" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger value="twitter" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <TrendingUp className="w-3.5 h-3.5" />
                 Twitter
-              </TabsTrigger>
-              <TabsTrigger value="other" className="gap-1.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Layers className="w-3.5 h-3.5" />
-                Other
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="emails">
-              <EmailFeed activities={activities || []} />
+              <EmailFeed emails={data?.emails || []} />
             </TabsContent>
 
-            <TabsContent value="market">
-              <MarketFeed activities={activities || []} />
-            </TabsContent>
-
-            <TabsContent value="other">
-              {otherActivities.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
-                    <Bot className="w-7 h-7 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium text-foreground mb-1">No other activity</p>
-                  <p className="text-xs text-muted-foreground">Tasks and alerts will appear here.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {otherActivities.map((a, i) => (
-                    <ActivityCard key={a._id || `${a.timestamp}-${i}`} activity={a} />
-                  ))}
-                </div>
-              )}
+            <TabsContent value="twitter">
+              <MarketFeed summaries={data?.summaries || []} />
             </TabsContent>
           </Tabs>
         )}
